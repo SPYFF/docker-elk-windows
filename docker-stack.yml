@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.4'
 
 services:
 
@@ -11,12 +11,19 @@ services:
       - source: elastic_config
         target: /usr/share/elasticsearch/config/elasticsearch.yml
     environment:
-      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ES_JAVA_OPTS: "-Xmx1024m -Xms1024m"
     networks:
       - elk
     deploy:
       mode: replicated
       replicas: 1
+      resources:
+        limits:
+          memory: 1024M
+        reservations:
+          memory: 1024M
+    volumes:
+      - /c/Users/USER/elastic/data:/usr/share/elasticsearch/data
 
   logstash:
     image: docker.elastic.co/logstash/logstash-oss:6.5.4
@@ -28,8 +35,6 @@ services:
         target: /usr/share/logstash/config/logstash.yml
       - source: logstash_pipeline
         target: /usr/share/logstash/pipeline/logstash.conf
-    environment:
-      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     networks:
       - elk
     deploy:
